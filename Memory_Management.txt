@@ -1,0 +1,37 @@
+Since Large memory is required to maintain dense graphs and it would be cumbersome to add all the nodes and form edges on a single Machine,the large amount of Input can be handled
+by using a database with one table named as Node_Neighbour_Relation.
+1)Node_Neighbour_Relation
+a)There can be two fields/coloumns in the table.
+b)The coloumns are named as Node,Neighbour
+c)For every node in the table we can make an entry with the particular node and its neighbours.
+d)Both the coloumns,The node and the neighbour are indexed.
+
+Table creation:
+Create Table Node_Neighbour_Relation(
+node bigInt NOTNULL,
+neighbour bigInt NOTNULL
+)
+Because maintaing such a huge able in the machine would again be a tasking thing,The solution to problem can be overcome by partioning the table.The table
+could be partitioned using the node field/coloumn asthe parition key.
+For example,We can create the partitions of the table by using a hash function.
+Suppose we create k partitions for he table based on the hashfunction node%k.
+Suppose k =10(any random number),the the nOde_Neighbour_Relation table has 10 child tables with the names as node_Neighbour_Relation_0 to node_Neighbour_Relation_9.
+Now if a new node comes up that needs to be added to the table,for eg,i have a node with the id-12345 then I can use a hashfunction to calculate the partition table this node 
+falls into As 12345%10=5,I can insert the node into the partition 5 that is node_Neighbour_Relation_5.
+
+Different methods on the Table:
+
+1)Add method-As soon as an edge arrives to be inserted into the table,we first calculae the hash key for both the nodes of the respective edge and then insert both the nodes in
+their respective parttitions based on the hash key generation,with the other node being he neighbour to the previous one and vice versa.
+
+2)Remove-method-On recieving  a remove edge condtion,I calculate the hash key for both the nodes of the edge and then remove both the nodes from their respective partitions using 
+neighbour as the other node.
+
+
+3)Is Linked method:
+While iterating over he stack in the DFS Method this method,first calculates the hash value for every element it pops out ofthe stackand based on that it determines the
+partition for that node and gets all the neighbours for that node from the respective partition.
+
+However,If all the partitions cannot be placed on one server,then in that case the Table could be sharded with each partition being placed on a  different shard and the program while performing
+all the three operations,the insert,remove and update should know about the address of each shard.
+This is how effiecient memory management can be obtained by using tables,and indexes so that it doesnt occupy a lot of space on a single Machine. 
